@@ -1,33 +1,64 @@
-class UnauthorizedException extends Error {
+import fs from 'fs'
+import { parse } from 'csv-parse'
+
+export class UnauthorizedException extends Error {
   constructor(message = 'Unauthorized') {
     super(message)
   }
 }
 
 export default class NextBrain {
-  constructor({access_token, backend_url='https://api.nextbrain.ai', is_app=false}) {
-    this.access_token = access_token
-    this.backend_url = backend_url
-    this.is_app = is_app
+  constructor({accessToken, backendUrl='https://api.nextbrain.ai', isApp=false}) {
+    this.accessToken = accessToken
+    this.backendUrl = backendUrl
+    this.isApp = isApp
   }
 
-  async get_accuracy(model_id) {
+  async loadCsv(filePath, options={delimiter: ','}) {
+    return await new Promise((resolve, reject) => {
+      const parser = parse(options);
+      const rows = [];
+
+      fs.createReadStream(filePath)
+        .on('error', (err) => reject(err))
+        .pipe(parser)
+
+      parser.on('readable', () => {
+        let record;
+        while ((record = parser.read())) {
+          rows.push(record)
+        }
+      });
+
+      parser.on('end', () => {
+        resolve(rows)
+      });
+    });
+  }
+
+  async getAccuracy(modelId) {
     let response
 
-    if (this.is_app) {
-      response = await fetch(`${this.backend_url}/app/acc/${model_id}`, {
+    if (this.isApp) {
+      response = await fetch(`${this.backendUrl}/app/acc/${modelId}`, {
         headers: {
-          access_token: this.access_token,
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         },
       })
     } else {
       response = await fetch(
-        `${this.backend_url}/model/acc_token/${model_id}`,
+        `${this.backendUrl}/model/acc_token/${modelId}`,
         {
           method: 'POST',
           body: JSON.stringify({
-            access_token: this.access_token,
+            access_token: this.accessToken,
           }),
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
         },
       )
     }
@@ -39,24 +70,30 @@ export default class NextBrain {
     return await response.json()
   }
 
-  async wait_model(model_id, wait_imported = true) {
+  async waitModel(modelId, waitImported = true) {
     while (true) {
       let response
 
-      if (this.is_app) {
-        response = await fetch(`${this.backend_url}/app/status/${model_id}`, {
+      if (this.isApp) {
+        response = await fetch(`${this.backendUrl}/app/status/${modelId}`, {
           headers: {
-            access_token: this.access_token,
+            access_token: this.accessToken,
+            accept: 'application/json',
+            'Content-Type': 'application/json'
           },
         })
       } else {
         response = await fetch(
-          `${this.backend_url}/model/status_token/${model_id}`,
+          `${this.backendUrl}/model/status_token/${modelId}`,
           {
             method: 'POST',
             body: JSON.stringify({
-              access_token: this.access_token,
+              access_token: this.accessToken,
             }),
+            headers: {
+              accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
           },
         )
       }
@@ -67,7 +104,7 @@ export default class NextBrain {
 
       const data = await response.json()
 
-      if (wait_imported) {
+      if (waitImported) {
         if (data['dataset_status'] === 'imported') {
           return
         } else if (data['dataset_status'] === 'error') {
@@ -85,26 +122,32 @@ export default class NextBrain {
     }
   }
 
-  async upload_model(table) {
+  async uploadModel(table) {
     let response
 
-    if (this.is_app) {
-      response = await fetch(`${this.backend_url}/app/import_matrix`, {
+    if (this.isApp) {
+      response = await fetch(`${this.backendUrl}/app/import_matrix`, {
         method: 'POST',
         body: JSON.stringify({
           matrix: table,
         }),
         headers: {
-          access_token: this.access_token,
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         },
       })
     } else {
-      response = await fetch(`${this.backend_url}/csv/import_matrix_token`, {
+      response = await fetch(`${this.backendUrl}/csv/import_matrix_token`, {
         method: 'POST',
         body: JSON.stringify({
-          access_token: this.access_token,
+          access_token: this.accessToken,
           matrix: table,
         }),
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
       })
     }
 
@@ -113,27 +156,27 @@ export default class NextBrain {
     }
 
     const data = await response.json()
-    const model_id = data.model.id
-    await this.wait_model(model_id)
-    return model_id
+    const modelId = data.model.id
+    await this.waitModel(modelId)
+    return modelId
   }
 
-  async train_model(model_id, target, is_lightning = false) {
+  async trainModel(modelId, target, isLightning = false) {
     let url, data
-    if (this.is_app) {
-      url = `${this.backend_url}/app/train`
+    if (this.isApp) {
+      url = `${this.backendUrl}/app/train`
       data = {
         target: target,
-        model_id: model_id,
-        is_lightning: is_lightning,
+        model_id: modelId,
+        is_lightning: isLightning,
       }
     } else {
-      url = `${this.backend_url}/model/train_token`
+      url = `${this.backendUrl}/model/train_token`
       data = {
-        access_token: this.access_token,
+        access_token: this.accessToken,
         target: target,
-        model_id: model_id,
-        is_lightning: is_lightning,
+        model_id: modelId,
+        is_lightning: isLightning,
       }
     }
 
@@ -141,8 +184,9 @@ export default class NextBrain {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          access_token: this.access_token,
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(data),
       })
@@ -151,20 +195,21 @@ export default class NextBrain {
         throw new UnauthorizedException()
       }
 
-      await this.wait_model(model_id, false)
+      await this.waitModel(modelId, false)
     } catch (error) {
       console.error(error)
     }
   }
 
-  async predict_model(model_id, header, rows) {
+  async predictModel(modelId, header, rows) {
     let response;
-    if (this.is_app) {
-      response = await fetch(`${this.backend_url}/app/predict/${model_id}`, {
+    if (this.isApp) {
+      response = await fetch(`${this.backendUrl}/app/predict/${modelId}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'access_token': this.access_token,
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           header: header,
@@ -172,13 +217,14 @@ export default class NextBrain {
         }),
       });
     } else {
-      response = await fetch(`${this.backend_url}/model/predict_token/${model_id}`, {
+      response = await fetch(`${this.backendUrl}/model/predict_token/${modelId}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          access_token: this.access_token,
+          access_token: this.accessToken,
           header: header,
           rows: rows,
         }),
@@ -192,32 +238,35 @@ export default class NextBrain {
     return await response.json();
   }
 
-  async upload_and_predict(table, predict_table, target) {
-    const model_id = await this.upload_model(table);
-    await this.train_model(model_id, target);
-    const predictions = await this.predict_model(model_id, predict_table[0], predict_table.slice(1));
-    return [model_id, predictions];
+  async uploadAndPredict(table, predictTable, target, isLightning = false) {
+    const modelId = await this.uploadModel(table);
+    await this.trainModel(modelId, target, isLightning);
+    const predictions = await this.predictModel(modelId, predictTable[0], predictTable.slice(1));
+    return [modelId, predictions];
   }
 
-  async delete_model(model_id) {
+  async deleteModel(modelId) {
     let response;
 
-    if (this.is_app) {
-      response = await fetch(`${this.backend_url}/app/delete_model/${model_id}`, {
+    if (this.isApp) {
+      response = await fetch(`${this.backendUrl}/app/delete_model/${modelId}`, {
         method: 'POST',
         headers: {
-          'access_token': this.access_token
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         }
       });
     } else {
-      response = await fetch(`${this.backend_url}/model/delete_model_token/${model_id}`, {
+      response = await fetch(`${this.backendUrl}/model/delete_model_token/${modelId}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'access_token': this.access_token
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          'access_token': this.access_token
+          'access_token': this.accessToken
         })
       });
     }

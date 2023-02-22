@@ -10,14 +10,14 @@ npm install nextbrain
 ```javascript
 import NextBrain from 'nextbrain'
 
-nb = NextBrain({
+const nb = new NextBrain({
   access_token: '<YOUR-ACCESS-TOKEN-HERE>',
 })
 
-table = nb.load_csv('<PATH-TO-YOUR-TRAINING-CSV>')
-predict_table = nb.load_csv('<PATH-TO-YOUR-PREDICTING-CSV>')
+const table = await nb.loadCsv('<PATH-TO-YOUR-TRAINING-CSV>')
+const predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
 
-model_id, response = nb.upload_and_predict(table, predict_table, '<YOUR-TARGET-COLUMN>')
+let modelId, response = await nb.uploadAndPredict(table, predictTable, '<YOUR-TARGET-COLUMN>')
 console.log('Response:', response)
 ```
 
@@ -25,20 +25,20 @@ console.log('Response:', response)
 ```javascript
 import NextBrain from 'nextbrain'
 
-nb = NextBrain({
+let nb = new NextBrain({
   access_token: '<YOUR-ACCESS-TOKEN-HERE>',
 })
 
 // You can create your custom table and predict table by your own from any source
-table = nb.load_csv('<PATH-TO-YOUR-TRAINING-CSV>')
+let table = await nb.loadCsv('<PATH-TO-YOUR-TRAINING-CSV>')
 // Upload the model to NextBrain service
-model_id = nb.upload_model(table)
+let modelId = await nb.uploadModel(table)
 // Train the model
 // You can re-train a previous model
-nb.train_model(model_id, '<YOUR-TARGET-COLUMN>')
+await nb.trainModel(modelId, '<YOUR-TARGET-COLUMN>')
 
-predict_table = nb.load_csv('<PATH-TO-YOUR-PREDICTING-CSV>')
+let predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
 // You can predict multiple using the same model (don't need to create a new model each time)
-response = nb.predict_model(model_id, predict_table[0], predict_table[1:])
+let response = await nb.predictModel(modelId, predictTable[0], predictTable[1:])
 console.log('Response:', response)
 ```

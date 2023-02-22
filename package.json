@@ -1,8 +1,9 @@
 {
   "name": "nextbrain",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Convenient access to the NextBrain API from javascript",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,ts,tsx,json}\""
@@ -26,8 +27,11 @@
   "bugs": {
     "url": "https://github.com/NextBrain-ai/nextbrain-javascript/issues"
   },
-  "homepage": "https://github.com/NextBrain-ai/nextbrain-javascript#readme",
+  "homepage": "https://nextbrain.ai",
   "dependencies": {
+    "csv-parse": "^5.3.5"
+  },
+  "devDependencies": {
     "prettier": "^2.8.4"
   }
 }
