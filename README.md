@@ -17,28 +17,37 @@ const nb = new NextBrain({
 const table = await nb.loadCsv('<PATH-TO-YOUR-TRAINING-CSV>')
 const predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
 
-let modelId, response = await nb.uploadAndPredict(table, predictTable, '<YOUR-TARGET-COLUMN>')
+const [modelId, response] = await nb.uploadAndPredict(table, predictTable, '<YOUR-TARGET-COLUMN>')
 console.log('Response:', response)
+
+// You can optionally delete the model
+await nb.deleteModel(modelId)
 ```
 
 ### Step by step
 ```javascript
 import NextBrain from 'nextbrain'
 
-let nb = new NextBrain({
+const nb = new NextBrain({
   access_token: '<YOUR-ACCESS-TOKEN-HERE>',
 })
 
 // You can create your custom table and predict table by your own from any source
-let table = await nb.loadCsv('<PATH-TO-YOUR-TRAINING-CSV>')
+const table = await nb.loadCsv('<PATH-TO-YOUR-TRAINING-CSV>')
 // Upload the model to NextBrain service
-let modelId = await nb.uploadModel(table)
+const modelId = await nb.uploadModel(table)
 // Train the model
 // You can re-train a previous model
 await nb.trainModel(modelId, '<YOUR-TARGET-COLUMN>')
 
-let predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
+const predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
 // You can predict multiple using the same model (don't need to create a new model each time)
-let response = await nb.predictModel(modelId, predictTable[0], predictTable[1:])
+const response = await nb.predictModel(modelId, predictTable[0], predictTable[1:])
 console.log('Response:', response)
 ```
+
+## Extra notes
+
+Everytime you train, you can select an option to create lightning models. `isLightning` is an optional parameter that by default is set to `false` but can be overrided in `trainModel` and `uploadAndPredict`.
+
+We also recommend that you investigate all the methods that the class provides you with to make the most of the functionalities we offer. For example, you can use the `getAccuracy` method to obtain all the information about the performance of your model.
