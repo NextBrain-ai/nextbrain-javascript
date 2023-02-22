@@ -1,5 +1,5 @@
-# NextBrain
-Convenient access to the [NextBrain](https://nextbrain.ai) API from Javascript
+# NextBrain AI
+Convenient access to the [NextBrain AI](https://nextbrain.ai) API from Javascript
 
 ## Installation
 ```bash
