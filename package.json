@@ -1,0 +1,33 @@
+{
+  "name": "nextbrain",
+  "version": "1.0.0",
+  "description": "Convenient access to the NextBrain API from javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,ts,tsx,json}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NextBrain-ai/nextbrain-javascript.git"
+  },
+  "keywords": [
+    "nextbrain",
+    "ai",
+    "model",
+    "machine",
+    "learning",
+    "ml",
+    "automl",
+    "softpoint"
+  ],
+  "author": "Softpoint Consultores S.L.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NextBrain-ai/nextbrain-javascript/issues"
+  },
+  "homepage": "https://github.com/NextBrain-ai/nextbrain-javascript#readme",
+  "dependencies": {
+    "prettier": "^2.8.4"
+  }
+}
