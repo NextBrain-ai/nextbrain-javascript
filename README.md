@@ -14,6 +14,14 @@ const nb = new NextBrain({
   access_token: '<YOUR-ACCESS-TOKEN-HERE>',
 })
 
+// You can create your custom table and predict table by your own from any source
+// It is a list of list, where the first row contains the header
+// Example:
+// [
+//   [ Column1, Column2, Column3 ],
+//   [       1,       2,       3 ],
+//   [       4,       5,       6 ]
+// ]
 const table = await nb.loadCsv('<PATH-TO-YOUR-TRAINING-CSV>')
 const predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
 
@@ -42,7 +50,7 @@ await nb.trainModel(modelId, '<YOUR-TARGET-COLUMN>')
 
 const predictTable = await nb.loadCsv('<PATH-TO-YOUR-PREDICTING-CSV>')
 // You can predict multiple using the same model (don't need to create a new model each time)
-const response = await nb.predictModel(modelId, predictTable[0], predictTable[1:])
+const response = await nb.predictModel(modelId, predictTable)
 console.log('Response:', response)
 ```
 
