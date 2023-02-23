@@ -1,13 +1,13 @@
-import fs from 'fs'
-import { parse } from 'csv-parse'
+const fs = require('fs')
+const { parse } = require('csv-parse')
 
-export class UnauthorizedException extends Error {
+class UnauthorizedException extends Error {
   constructor(message = 'Unauthorized') {
     super(message)
   }
 }
 
-export default class NextBrain {
+class NextBrain {
   constructor({
     accessToken,
     backendUrl = 'https://api.nextbrain.ai',
@@ -320,4 +320,9 @@ export default class NextBrain {
 
     return
   }
+}
+
+module.exports = {
+  NextBrain,
+  UnauthorizedException,
 }

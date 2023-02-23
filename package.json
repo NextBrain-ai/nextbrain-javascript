@@ -1,9 +1,13 @@
 {
   "name": "nextbrain",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Convenient access to the NextBrain API from javascript",
   "main": "index.js",
-  "type": "module",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --config .prettierrc.json --write \"./**/*.{js,jsx,ts,tsx,json}\""

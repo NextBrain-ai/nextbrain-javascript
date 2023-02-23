@@ -8,7 +8,7 @@ npm install nextbrain
 
 ### All steps in one.
 ```javascript
-import NextBrain from 'nextbrain'
+import { NextBrain } from 'nextbrain'
 
 const nb = new NextBrain({
   access_token: '<YOUR-ACCESS-TOKEN-HERE>',
@@ -34,7 +34,7 @@ await nb.deleteModel(modelId)
 
 ### Step by step
 ```javascript
-import NextBrain from 'nextbrain'
+import { NextBrain } from 'nextbrain'
 
 const nb = new NextBrain({
   access_token: '<YOUR-ACCESS-TOKEN-HERE>',
