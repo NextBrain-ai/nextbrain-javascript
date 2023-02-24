@@ -1,6 +1,6 @@
 {
   "name": "nextbrain",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "Convenient access to the NextBrain API from javascript",
   "main": "index.js",
   "files": [

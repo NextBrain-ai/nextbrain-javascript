@@ -278,6 +278,40 @@ class NextBrain {
     return await response.json()
   }
 
+  async getPredictColumns(modelId) {
+    let response
+    if (this.isApp) {
+      response = await fetch(
+        `${this.backendUrl}/app/predict_columns/${modelId}`,
+        {
+          headers: {
+            access_token: this.accessToken,
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+    } else {
+      response = await fetch(
+        `${this.backendUrl}/model/predict_columns_token/${modelId}`,
+        {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            access_token: this.accessToken,
+          }),
+        },
+      )
+    }
+    if (response.status === 401) {
+      throw new UnauthorizedException()
+    }
+    return await response.json()
+  }
+
   async uploadAndPredict(table, predictTable, target, isLightning = false) {
     const modelId = await this.uploadModel(table)
     await this.trainModel(modelId, target, isLightning)
