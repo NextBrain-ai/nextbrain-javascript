@@ -354,6 +354,37 @@ class NextBrain {
 
     return
   }
+
+  async getAllModelIds() {
+    let response
+    if (this.isApp) {
+      response = await fetch(`${this.backendUrl}/app/model_ids`, {
+        headers: {
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+    } else {
+      response = await fetch(`${this.backendUrl}/model/model_ids_token`, {
+        method: 'POST',
+        headers: {
+          access_token: this.accessToken,
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          access_token: this.accessToken,
+        }),
+      })
+    }
+
+    if (response.status === 401) {
+      throw new UnauthorizedException()
+    }
+
+    return await response.json()
+  }
 }
 
 module.exports = {
